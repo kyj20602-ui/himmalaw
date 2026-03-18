@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>himma 사옥 프로젝트</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Archivo Narrow', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    font-weight: 300;
+  }
+
+  .header {
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .header-left { line-height: 1.5; }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+  .nav-btn {
+    background: transparent; border: none;
+    color: #444;
+    font-size: 13px; font-family: inherit; font-weight: 300;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+  .nav-btn:hover { color: #aaa; }
+  .nav-btn.active { color: #c8b87a; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .sheets-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .sheets-panel input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #2a2a2a;
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 0;
+    font-family: inherit;
+    font-weight: 300;
+    outline: none;
+    width: 260px;
+    letter-spacing: 0.02em;
+    transition: border-color 0.2s;
+  }
+  .sheets-panel input:focus { border-color: #c8b87a; color: #fff; }
+  .sheets-panel input::placeholder { color: #444; }
+  .btn-load {
+    background: transparent; border: none;
+    color: #c8b87a; font-size: 11px; font-family: inherit; font-weight: 300;
+    cursor: pointer; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 0; transition: color 0.2s;
+  }
+  .btn-load:hover { color: #fff; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2.5rem; }
+
+  .status-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 2.5rem;
+    font-size: 11px; color: #aaa;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    min-height: 18px;
+  }
+  .status-dot { width: 4px; height: 4px; border-radius: 50%; background: #2a2a2a; flex-shrink: 0; }
+  .status-dot.ok { background: #c8b87a; }
+  .status-dot.error { background: #773333; }
+  .status-dot.loading { background: #c8b87a; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+  .tabs {
+    display: flex;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #161616;
+  }
+  .tab-btn {
+    background: transparent; border: none;
+    border-bottom: 1px solid transparent;
+    color: #aaa;
+    font-size: 13px; font-family: inherit; font-weight: 300;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    padding: 0 0 1rem 0;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn:hover { color: #fff; }
+  .tab-btn.active { color: #c8b87a; border-bottom-color: #c8b87a; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .era-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: #161616;
+    margin-bottom: 4rem;
+  }
+  .era-card { background: #0a0a0a; padding: 2.5rem 2rem; }
+  .era-label {
+    font-size: 11px; font-weight: 300;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    display: block; margin-bottom: 2rem;
+  }
+  .era-1990 .era-label { color: #c8b87a; }
+  .era-2014 .era-label { color: #6677aa; }
+  .era-current .era-label { color: #aaa; }
+  .era-title {
+    font-size: 20px; font-weight: 300;
+    color: #fff; letter-spacing: -0.01em;
+    line-height: 1.4; margin-bottom: 1.8rem;
+  }
+  .era-content {
+    font-size: 14px; font-weight: 300;
+    color: #fff; line-height: 2.2; white-space: pre-wrap;
+  }
+  .law-ref {
+    font-size: 11px; color: #aaa;
+    margin-top: 2rem; padding-top: 1.5rem;
+    border-top: 1px solid #161616;
+    line-height: 1.9; letter-spacing: 0.02em;
+  }
+
+  .links-section { margin-top: 0; }
+  .links-title {
+    font-size: 10px; font-weight: 300;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #aaa; margin-bottom: 1.5rem;
+  }
+  .link-item {
+    display: flex; align-items: baseline; gap: 2rem;
+    padding: 1rem 0; border-bottom: 1px solid #111;
+  }
+  .link-item:last-child { border-bottom: none; }
+  .link-badge {
+    font-size: 10px; font-weight: 300;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    white-space: nowrap; flex-shrink: 0; width: 32px;
+  }
+  .badge-법령 { color: #c8b87a; }
+  .badge-연혁 { color: #6677aa; }
+  .badge-해설 { color: #778866; }
+  .link-info { flex: 1; display: flex; align-items: baseline; gap: 2rem; flex-wrap: wrap; }
+  .link-name {
+    font-size: 12px; font-weight: 300; color: #fff;
+    text-decoration: none; letter-spacing: 0.02em; transition: color 0.2s;
+  }
+  .link-name:hover { color: #c8b87a; }
+  .link-desc { font-size: 11px; color: #aaa; letter-spacing: 0.02em; }
+
+  .notice {
+    margin-top: 3rem; padding-top: 2rem;
+    border-top: 1px solid #161616;
+    font-size: 11px; color: #aaa;
+    line-height: 2; letter-spacing: 0.02em;
+  }
+
+  .guide-box {
+    border: 1px solid #1a1a1a;
+    padding: 1.5rem 2rem; margin-bottom: 2rem;
+  }
+  .guide-box h3 {
+    font-size: 10px; font-weight: 300;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #c8b87a; margin-bottom: 1rem;
+  }
+  .guide-box ol {
+    padding-left: 1.2rem; font-size: 12px; font-weight: 300;
+    color: #fff; line-height: 2.2; letter-spacing: 0.02em;
+  }
+  .guide-box code { color: #c8b87a; font-family: monospace; font-size: 11px; }
+  .guide-box a { color: #fff; text-decoration: none; }
+  .guide-box a:hover { color: #c8b87a; }
+
+  .empty-page {
+    padding: 6rem 0;
+    text-align: center;
+    font-size: 12px; color: #333;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) {
+    .header { padding: 1.5rem; flex-direction: column; gap: 1.2rem; }
+    .container { padding: 2rem 1.5rem; }
+    .era-grid { grid-template-columns: 1fr; }
+    .tabs { gap: 1.5rem; overflow-x: auto; white-space: nowrap; }
+    .nav { gap: 1.5rem; }
+    .sheets-panel { width: 100%; }
+    .sheets-panel input { width: 100%; }
+  }
+
+  /* ── 면적 검토 계산기 ── */
+  .calc-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 3rem;
+    align-items: start;
+  }
+  .calc-inputs { display: flex; flex-direction: column; gap: 2rem; }
+  .calc-section {
+    border-top: 1px solid #1a1a1a;
+    padding-top: 1.5rem;
+  }
+  .calc-section-title {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #c8b87a; margin-bottom: 1.2rem;
+  }
+  .field-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #111;
+  }
+  .field-row:last-child { border-bottom: none; }
+  .field-row label {
+    font-size: 24px; font-weight: 300; color: #fff;
+    letter-spacing: 0.02em; flex-shrink: 0; width: 240px;
+  }
+  .input-wrap {
+    display: flex; align-items: center; gap: 6px;
+    justify-content: flex-end;
+  }
+  .input-wrap input {
+    background: transparent; border: none;
+    border-bottom: 1px solid #2a2a2a;
+    color: #fff; font-size: 26px;
+    font-family: inherit; font-weight: 300;
+    text-align: right; width: 140px;
+    padding: 3px 0; outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-wrap input:focus { border-color: #c8b87a; }
+  .input-wrap input[type="text"] { width: 260px; text-align: left; }
+  .unit { font-size: 22px; color: #aaa; letter-spacing: 0.04em; }
+
+  /* 결과 패널 */
+  .calc-results { position: relative; }
+  .result-sticky {
+    position: sticky; top: 2rem;
+    background: #0f0f0f;
+    border: 1px solid #1a1a1a;
+    padding: 2rem;
+  }
+  .result-section-title {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #c8b87a; margin-bottom: 1rem;
+  }
+  .result-row {
+    display: flex; align-items: baseline;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #111;
+  }
+  .result-row:last-of-type { border-bottom: none; }
+  .result-label { font-size: 22px; color: #fff; letter-spacing: 0.02em; }
+  .result-val { font-size: 26px; color: #fff; font-weight: 300; }
+  .result-highlight .result-label { color: #aaa; }
+  .result-highlight .result-val { font-size: 36px; color: #c8b87a; }
+  .result-bar-wrap { margin: 0.8rem 0; }
+  .result-bar-bg {
+    width: 100%; height: 2px; background: #1a1a1a;
+    position: relative; overflow: visible;
+  }
+  .result-bar {
+    height: 2px; background: #c8b87a;
+    transition: width 0.4s; position: absolute; top: 0; left: 0;
+  }
+  .result-bar.over { background: #773333; }
+  .result-bar-limit {
+    position: absolute; top: -3px; width: 1px; height: 8px;
+    background: #444;
+  }
+  .result-status {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 0.5rem; min-height: 16px;
+  }
+  .result-status.ok { color: #c8b87a; }
+  .result-status.over { color: #773333; }
+  .result-divider { border-top: 1px solid #1a1a1a; margin: 1.2rem 0; }
+  .checklist-title {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #c8b87a; margin-bottom: 0.8rem;
+  }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 0.4rem 0; font-size: 22px; color: #fff;
+    letter-spacing: 0.02em; line-height: 1.6;
+  }
+  .check-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .check-dot.ok { background: #c8b87a; }
+  .check-dot.warn { background: #773333; }
+  .check-dot.neutral { background: #333; }
+
+  @media (max-width: 900px) {
+    .calc-layout { grid-template-columns: 1fr; }
+    .result-sticky { position: static; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <img src="himma LOGO_White.png" style="height:90px; width:auto;" alt="himma" />
+  </div>
+  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:1.5rem;">
+    <nav class="nav">
+      <button class="nav-btn" onclick="showPage('area-review', this)">면적 검토</button>
+      <button class="nav-btn active" onclick="showPage('law-review', this)">법규 검토</button>
+    </nav>
+    <div class="sheets-panel" id="sheetsPanel">
+      <input type="text" id="sheetUrl" placeholder="google sheets csv url" />
+      <button class="btn-load" onclick="loadFromSheet()">Load</button>
+    </div>
+  </div>
+</div>
+
+<!-- 면적 검토 페이지 -->
+<div id="area-review" class="page">
+  <div class="container">
+    <div class="calc-layout">
+      <!-- 왼쪽: 입력 -->
+      <div class="calc-inputs">
+        <div class="calc-section">
+          <div class="calc-section-title">기존 건물</div>
+          <div class="field-row"><label>건축면적</label><div class="input-wrap"><input type="number" id="exist_floor_area" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>연면적</label><div class="input-wrap"><input type="number" id="exist_total_area" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>층수</label><div class="input-wrap"><input type="number" id="exist_floors" placeholder="0" oninput="calc()"><span class="unit">층</span></div></div>
+          <div class="field-row"><label>용도</label><div class="input-wrap"><input type="text" id="exist_use" placeholder="예: 단독주택" oninput="calc()"></div></div>
+        </div>
+        <div class="calc-section">
+          <div class="calc-section-title">대지 조건</div>
+          <div class="field-row"><label>대지면적</label><div class="input-wrap"><input type="number" id="site_area" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>용도지역</label><div class="input-wrap"><input type="text" id="zone_type" placeholder="예: 제2종 일반주거" oninput="calc()"></div></div>
+          <div class="field-row"><label>허용 건폐율</label><div class="input-wrap"><input type="number" id="allow_bcr" placeholder="60" oninput="calc()"><span class="unit">%</span></div></div>
+          <div class="field-row"><label>허용 용적률</label><div class="input-wrap"><input type="number" id="allow_far" placeholder="200" oninput="calc()"><span class="unit">%</span></div></div>
+        </div>
+        <div class="calc-section">
+          <div class="calc-section-title">철거 계획</div>
+          <div class="field-row"><label>철거 건축면적</label><div class="input-wrap"><input type="number" id="demo_floor" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>철거 연면적</label><div class="input-wrap"><input type="number" id="demo_total" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+        </div>
+        <div class="calc-section">
+          <div class="calc-section-title">증축 계획</div>
+          <div class="field-row"><label>수평 증축 건축면적</label><div class="input-wrap"><input type="number" id="add_h_floor" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>수평 증축 연면적</label><div class="input-wrap"><input type="number" id="add_h_total" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>수직 증축 연면적</label><div class="input-wrap"><input type="number" id="add_v_total" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+        </div>
+        <div class="calc-section">
+          <div class="calc-section-title">용적률 제외 면적</div>
+          <div class="field-row"><label>지하층 면적</label><div class="input-wrap"><input type="number" id="excl_basement" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>필로티 면적</label><div class="input-wrap"><input type="number" id="excl_piloti" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+          <div class="field-row"><label>기타 제외 면적</label><div class="input-wrap"><input type="number" id="excl_etc" placeholder="0" oninput="calc()"><span class="unit">㎡</span></div></div>
+        </div>
+        <div class="calc-section">
+          <div class="calc-section-title">주차</div>
+          <div class="field-row"><label>법정 주차대수</label><div class="input-wrap"><input type="number" id="parking_req" placeholder="0" oninput="calc()"><span class="unit">대</span></div></div>
+          <div class="field-row"><label>확보 주차대수</label><div class="input-wrap"><input type="number" id="parking_prov" placeholder="0" oninput="calc()"><span class="unit">대</span></div></div>
+        </div>
+      </div>
+      <!-- 오른쪽: 결과 -->
+      <div class="calc-results">
+        <div class="result-sticky">
+          <div class="result-section-title">건축면적 검토</div>
+          <div class="result-row"><span class="result-label">철거 후 건축면적</span><span class="result-val" id="r_floor_after">—</span></div>
+          <div class="result-row"><span class="result-label">증축 후 건축면적</span><span class="result-val" id="r_floor_new">—</span></div>
+          <div class="result-row result-highlight"><span class="result-label">건폐율</span><span class="result-val" id="r_bcr">—</span></div>
+          <div class="result-bar-wrap"><div class="result-bar-bg"><div class="result-bar" id="bar_bcr"></div><div class="result-bar-limit" id="bar_bcr_limit"></div></div></div>
+          <div class="result-status" id="st_bcr"></div>
+          <div class="result-divider"></div>
+          <div class="result-section-title">연면적 검토</div>
+          <div class="result-row"><span class="result-label">철거 후 연면적</span><span class="result-val" id="r_total_after">—</span></div>
+          <div class="result-row"><span class="result-label">증축 후 연면적</span><span class="result-val" id="r_total_new">—</span></div>
+          <div class="result-row"><span class="result-label">용적률 산정 연면적</span><span class="result-val" id="r_far_area">—</span></div>
+          <div class="result-row result-highlight"><span class="result-label">용적률</span><span class="result-val" id="r_far">—</span></div>
+          <div class="result-bar-wrap"><div class="result-bar-bg"><div class="result-bar" id="bar_far"></div><div class="result-bar-limit" id="bar_far_limit"></div></div></div>
+          <div class="result-status" id="st_far"></div>
+          <div class="result-divider"></div>
+          <div class="result-section-title">여유 면적</div>
+          <div class="result-row"><span class="result-label">추가 가능 건축면적</span><span class="result-val" id="r_floor_margin">—</span></div>
+          <div class="result-row"><span class="result-label">추가 가능 연면적</span><span class="result-val" id="r_total_margin">—</span></div>
+          <div class="result-divider"></div>
+          <div class="result-section-title">주차</div>
+          <div class="result-row"><span class="result-label">법정 / 확보</span><span class="result-val" id="r_parking">—</span></div>
+          <div class="result-status" id="st_parking"></div>
+          <div class="result-divider"></div>
+          <div class="checklist-title">실무 체크리스트</div>
+          <div id="checklist"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 법규 검토 페이지 -->
+<div id="law-review" class="page active">
+  <div class="container">
+
+    <div class="guide-box" id="guideBox" style="display:none;">
+      <h3>Google Sheets 연동</h3>
+      <ol>
+        <li>구글 시트 → <code>파일 → 공유 → 웹에 게시</code></li>
+        <li>형식: <code>CSV</code> 선택 후 게시</li>
+        <li>생성된 URL을 상단 입력창에 붙여넣고 <code>Load</code></li>
+      </ol>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText"></span>
+    </div>
+
+    <div class="tabs" id="tabList"></div>
+    <div id="sectionList"></div>
+
+    <div class="links-section">
+      <div class="links-title">참고 및 출처</div>
+      <div id="linksList"></div>
+    </div>
+
+    <div class="notice">
+      1990년대 기준은 당시 건축허가 시점의 조문이 적용됩니다.
+      실제 설계·준공 연도에 따라 적용 법령이 다를 수 있으므로,
+      국가법령정보센터에서 해당 시점의 연혁 조문을 반드시 확인하세요.
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('sheetsPanel').style.display = id === 'law-review' ? 'flex' : 'none';
+}
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cell = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (!inQ && c === ',') { row.push(cell.trim()); cell = ''; continue; }
+    if (!inQ && (c === '\n' || (c === '\r' && text[i+1] === '\n'))) {
+      if (c === '\r') i++;
+      row.push(cell.trim()); rows.push(row); row = []; cell = '';
+      continue;
+    }
+    cell += c;
+  }
+  if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+  return rows;
+}
+
+function makeCard(eraClass, label, title, content, lawRef, extras) {
+  const extraHtml = extras.filter(e => e).map(e =>
+    `<div class="law-ref" style="margin-top:0.5rem;">${e}</div>`
+  ).join('');
+  return `<div class="era-card ${eraClass}">
+    <span class="era-label">${label}</span>
+    <div class="era-title">${title}</div>
+    <div class="era-content">${content}</div>
+    <div class="law-ref">${lawRef}</div>
+    ${extraHtml}
+  </div>`;
+}
+
+const ERA_CLASS = { '1990년대':'era-1990','2014년':'era-2014','현행':'era-current' };
+
+function renderLaw(rows) {
+  const topics = [];
+  const grids = {};
+  rows.forEach(r => {
+    if (r.length < 5 || r[0] === '법규항목' || r[0] === 'LINK') return;
+    const topic = r[0].trim();
+    const key = topic.replace(/\s/g, '');
+    if (!grids[key]) { grids[key] = ''; topics.push({ label: topic, key }); }
+    grids[key] += makeCard(ERA_CLASS[r[1].trim()] || 'era-current', r[1], r[2], r[3], r[4], r.slice(5));
+  });
+  const tabList = document.getElementById('tabList');
+  const sectionList = document.getElementById('sectionList');
+  tabList.innerHTML = '';
+  sectionList.innerHTML = '';
+  topics.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = t.label;
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sec-' + t.key).classList.add('active');
+    };
+    tabList.appendChild(btn);
+    const sec = document.createElement('div');
+    sec.id = 'sec-' + t.key;
+    sec.className = 'section' + (i === 0 ? ' active' : '');
+    sec.innerHTML = `<div class="era-grid">${grids[t.key]}</div>`;
+    sectionList.appendChild(sec);
+  });
+}
+
+function renderLinks(rows) {
+  const list = document.getElementById('linksList');
+  let html = '';
+  rows.forEach(r => {
+    if (r.length < 5 || r[0] !== 'LINK') return;
+    html += `<div class="link-item">
+      <span class="link-badge badge-${r[1].trim()}">${r[1]}</span>
+      <div class="link-info">
+        <a class="link-name" href="${r[3]}" target="_blank">${r[2]}</a>
+        <span class="link-desc">${r[4]}</span>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html || '<p style="color:#aaa;font-size:12px;padding:1rem 0;">링크 없음</p>';
+}
+
+function setStatus(state, msg) {
+  document.getElementById('statusDot').className = 'status-dot ' + state;
+  document.getElementById('statusText').textContent = msg;
+}
+
+async function loadFromSheet() {
+  const url = document.getElementById('sheetUrl').value.trim();
+  if (!url) { alert('URL을 입력해주세요.'); return; }
+  setStatus('loading', 'loading...');
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('network error');
+    const rows = parseCSV(await res.text());
+    renderLaw(rows); renderLinks(rows);
+    setStatus('ok', 'loaded from sheets');
+    localStorage.setItem('buildingLawSheetUrl', url);
+  } catch(e) {
+    setStatus('error', 'failed — ' + e.message);
+    document.getElementById('guideBox').style.display = 'block';
+  }
+}
+
+window.onload = async () => {
+  const saved = localStorage.getItem('buildingLawSheetUrl');
+  if (saved) {
+    document.getElementById('sheetUrl').value = saved;
+    setStatus('loading', 'loading...');
+    try {
+      const res = await fetch(saved);
+      if (!res.ok) throw new Error('not found');
+      const rows = parseCSV(await res.text());
+      renderLaw(rows); renderLinks(rows);
+      setStatus('ok', 'loaded from sheets');
+      return;
+    } catch(e) {}
+  }
+  setStatus('', '');
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('sheetUrl');
+  if (input) {
+    input.addEventListener('change', e => {
+      localStorage.setItem('buildingLawSheetUrl', e.target.value);
+    });
+  }
+});
+
+function v(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+function fmt(n) { return n.toFixed(2) + ' ㎡'; }
+function fmtp(n) { return n.toFixed(1) + ' %'; }
+
+function setBar(barId, limitId, val, max) {
+  const bar = document.getElementById(barId);
+  const lim = document.getElementById(limitId);
+  if (!bar || !lim) return;
+  const pct = max > 0 ? Math.min((val / max) * 100, 100) : 0;
+  const limitPct = max > 0 ? Math.min(100, 100) : 0;
+  bar.style.width = pct + '%';
+  bar.className = 'result-bar' + (val > max && max > 0 ? ' over' : '');
+  lim.style.left = '100%';
+}
+
+function setStatus(id, val, max) {
+  const el = document.getElementById(id);
+  if (!el || max <= 0) { if(el) el.textContent = ''; return; }
+  if (val > max) {
+    el.textContent = '초과 — ' + fmtp(val - max) + ' 초과';
+    el.className = 'result-status over';
+  } else {
+    el.textContent = '적합 — ' + fmtp(max - val) + ' 여유';
+    el.className = 'result-status ok';
+  }
+}
+
+function calc() {
+  const siteArea   = v('site_area');
+  const existFloor = v('exist_floor_area');
+  const existTotal = v('exist_total_area');
+  const demoFloor  = v('demo_floor');
+  const demoTotal  = v('demo_total');
+  const addHFloor  = v('add_h_floor');
+  const addHTotal  = v('add_h_total');
+  const addVTotal  = v('add_v_total');
+  const exclBase   = v('excl_basement');
+  const exclPiloti = v('excl_piloti');
+  const exclEtc    = v('excl_etc');
+  const allowBCR   = v('allow_bcr');
+  const allowFAR   = v('allow_far');
+  const parkReq    = v('parking_req');
+  const parkProv   = v('parking_prov');
+
+  const floorAfter = existFloor - demoFloor;
+  const floorNew   = floorAfter + addHFloor;
+  const totalAfter = existTotal - demoTotal;
+  const totalNew   = totalAfter + addHTotal + addVTotal;
+  const farArea    = totalNew - exclBase - exclPiloti - exclEtc;
+  const bcr        = siteArea > 0 ? (floorNew / siteArea) * 100 : 0;
+  const far        = siteArea > 0 ? (farArea  / siteArea) * 100 : 0;
+  const allowFloor = siteArea > 0 ? (siteArea * allowBCR / 100) : 0;
+  const allowTotal = siteArea > 0 ? (siteArea * allowFAR / 100) : 0;
+  const marginFloor = allowFloor - floorNew;
+  const marginTotal = allowTotal - farArea;
+
+  document.getElementById('r_floor_after').textContent = fmt(floorAfter);
+  document.getElementById('r_floor_new').textContent   = fmt(floorNew);
+  document.getElementById('r_bcr').textContent         = fmtp(bcr);
+  document.getElementById('r_total_after').textContent = fmt(totalAfter);
+  document.getElementById('r_total_new').textContent   = fmt(totalNew);
+  document.getElementById('r_far_area').textContent    = fmt(farArea);
+  document.getElementById('r_far').textContent         = fmtp(far);
+  document.getElementById('r_floor_margin').textContent = marginFloor >= 0 ? fmt(marginFloor) : '▲ ' + fmt(Math.abs(marginFloor));
+  document.getElementById('r_total_margin').textContent = marginTotal >= 0 ? fmt(marginTotal) : '▲ ' + fmt(Math.abs(marginTotal));
+  document.getElementById('r_parking').textContent = parkReq + ' 대 / ' + parkProv + ' 대';
+
+  setBar('bar_bcr', 'bar_bcr_limit', bcr, allowBCR);
+  setBar('bar_far', 'bar_far_limit', far, allowFAR);
+  setStatus('st_bcr', bcr, allowBCR);
+  setStatus('st_far', far, allowFAR);
+
+  const parkOk = parkProv >= parkReq && parkReq > 0;
+  const stP = document.getElementById('st_parking');
+  if (parkReq > 0) {
+    stP.textContent = parkOk ? '적합' : '부족 — ' + (parkReq - parkProv) + '대 부족';
+    stP.className = 'result-status ' + (parkOk ? 'ok' : 'over');
+  } else { stP.textContent = ''; }
+
+  // 체크리스트
+  const checks = [
+    { label: '건폐율', ok: allowBCR <= 0 || bcr <= allowBCR },
+    { label: '용적률', ok: allowFAR <= 0 || far <= allowFAR },
+    { label: '주차 확보', ok: parkReq <= 0 || parkProv >= parkReq },
+    { label: '철거 후 건축면적 양수', ok: floorAfter >= 0 },
+    { label: '철거 후 연면적 양수', ok: totalAfter >= 0 },
+    { label: '대지면적 입력', ok: siteArea > 0, neutral: siteArea <= 0 },
+    { label: '허용 건폐율 입력', ok: allowBCR > 0, neutral: allowBCR <= 0 },
+    { label: '허용 용적률 입력', ok: allowFAR > 0, neutral: allowFAR <= 0 },
+  ];
+  document.getElementById('checklist').innerHTML = checks.map(c => {
+    const cls = c.neutral ? 'neutral' : (c.ok ? 'ok' : 'warn');
+    return '<div class="check-item"><div class="check-dot '+cls+'"></div><span>'+c.label+'</span></div>';
+  }).join('');
+}
+
+// 초기 실행
+calc();
+
+</script>
+</body>
+</html>
