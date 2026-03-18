@@ -278,12 +278,13 @@ function parseCSV(text) {
   return rows;
 }
 
-function makeCard(eraClass, label, title, content, lawRef) {
+function makeCard(eraClass, label, title, content, lawRef, extra) {
   return `<div class="era-card ${eraClass}">
     <span class="era-label">${label}</span>
     <div class="era-title">${title}</div>
     <div class="era-content">${content}</div>
     <div class="law-ref">${lawRef}</div>
+    ${extra ? `<div class="law-ref" style="margin-top:0.5rem;">${extra}</div>` : ''}
   </div>`;
 }
 
