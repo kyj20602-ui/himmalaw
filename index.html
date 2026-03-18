@@ -312,22 +312,6 @@ function renderLaw(rows) {
   });
 }
 
-function renderLinks(rows) {
-  const list = document.getElementById('linksList');
-  let html = '';
-  rows.forEach(r => {
-    if (r.length < 5 || r[0] !== 'LINK') return;
-    html += `<div class="link-item">
-      <span class="link-badge badge-${r[1].trim()}">${r[1]}</span>
-      <div class="link-info">
-        <a class="link-name" href="${r[3]}" target="_blank">${r[2]}</a>
-        <span class="link-desc">${r[4]}</span>
-      </div>
-    </div>`;
-  });
-  list.innerHTML = html || '<p style="color:#aaa;font-size:12px;padding:1rem 0;">링크 없음</p>';
-}
-
 function setStatus(state, msg) {
   document.getElementById('statusDot').className = 'status-dot ' + state;
   document.getElementById('statusText').textContent = msg;
