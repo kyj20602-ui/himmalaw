@@ -278,13 +278,16 @@ function parseCSV(text) {
   return rows;
 }
 
-function makeCard(eraClass, label, title, content, lawRef, extra) {
+function makeCard(eraClass, label, title, content, lawRef, extras) {
+  const extraHtml = extras.filter(e => e).map(e =>
+    `<div class="law-ref" style="margin-top:0.5rem;">${e}</div>`
+  ).join('');
   return `<div class="era-card ${eraClass}">
     <span class="era-label">${label}</span>
     <div class="era-title">${title}</div>
     <div class="era-content">${content}</div>
     <div class="law-ref">${lawRef}</div>
-    ${extra ? `<div class="law-ref" style="margin-top:0.5rem;">${extra}</div>` : ''}
+    ${extraHtml}
   </div>`;
 }
 
@@ -298,7 +301,7 @@ function renderLaw(rows) {
     const topic = r[0].trim();
     const key = topic.replace(/\s/g, '');
     if (!grids[key]) { grids[key] = ''; topics.push({ label: topic, key }); }
-    grids[key] += makeCard(ERA_CLASS[r[1].trim()] || 'era-current', r[1], r[2], r[3], r[4], r[5] || '');
+    grids[key] += makeCard(ERA_CLASS[r[1].trim()] || 'era-current', r[1], r[2], r[3], r[4], r.slice(5));
   });
   const tabList = document.getElementById('tabList');
   const sectionList = document.getElementById('sectionList');
