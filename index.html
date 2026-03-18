@@ -249,12 +249,14 @@
     <button class="tab-btn" onclick="showTab('basement', this)">지하층 판정</button>
     <button class="tab-btn" onclick="showTab('area', this)">건축 면적</button>
     <button class="tab-btn" onclick="showTab('height', this)">건축물 높이</button>
+     <button class="tab-btn" onclick="showTab('height', this)">지상층 높이</button>
   </div>
 
   <div id="sunlight" class="section active"><div class="era-grid" id="grid-sunlight"></div></div>
   <div id="basement" class="section"><div class="era-grid" id="grid-basement"></div></div>
   <div id="area" class="section"><div class="era-grid" id="grid-area"></div></div>
   <div id="height" class="section"><div class="era-grid" id="grid-height"></div></div>
+  <div id="floor" class="section"><div class="era-grid" id="grid-floor"></div></div>
 
   <div class="links-section">
     <div class="links-title">참고 및 출처</div>
@@ -303,7 +305,7 @@ function makeCard(eraClass, label, title, content, lawRef) {
   </div>`;
 }
 
-const TOPIC_MAP = { '일조사선':'sunlight','지하층판정':'basement','건축면적':'area','건축물높이':'height' };
+const TOPIC_MAP = { '일조사선':'sunlight','지하층판정':'basement','건축면적':'area','건축물높이':'height','지상층높이':'floor' };
 const ERA_CLASS = { '1990년대':'era-1990','2014년':'era-2014','현행':'era-current' };
 
 function renderLaw(rows) {
