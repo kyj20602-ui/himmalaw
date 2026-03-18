@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>건축 법규 시대별 비교</title>
+<title>himma 사옥 프로젝트 법규 검토</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap');
 
@@ -319,7 +319,7 @@ function renderLaw(rows) {
   });
   Object.keys(grids).forEach(k => {
     const el = document.getElementById('grid-' + k);
-    if (el) el.innerHTML = grids[k] || '<p style="color:#2e2e2e;font-size:12px;padding:2rem;">데이터 없음</p>';
+    if (el) el.innerHTML = grids[k] || '<p style="color:#aaa;font-size:12px;padding:2rem;">데이터 없음</p>';
   });
 }
 
@@ -336,7 +336,7 @@ function renderLinks(rows) {
       </div>
     </div>`;
   });
-  list.innerHTML = html || '<p style="color:#2e2e2e;font-size:12px;padding:1rem 0;">링크 없음</p>';
+  list.innerHTML = html || '<p style="color:#aaa;font-size:12px;padding:1rem 0;">링크 없음</p>';
 }
 
 function setStatus(state, msg) {
