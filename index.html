@@ -396,9 +396,19 @@ window.onload = async () => {
     loadSample();
   }
 };
-document.getElementById('sheetUrl').addEventListener('change', e => {
-  localStorage.setItem('buildingLawSheetUrl', e.target.value);
-});
+window.onload = async () => {
+  setStatus('loading', 'loading...');
+  try {
+    const res = await fetch('data.csv');
+    if (!res.ok) throw new Error('not found');
+    const rows = parseCSV(await res.text());
+    renderLaw(rows); renderLinks(rows);
+    setStatus('ok', 'data.csv');
+  } catch(e) {
+    setStatus('', '');
+    loadSample();
+  }
+};
 </script>
 </body>
 </html>
